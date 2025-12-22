@@ -10,8 +10,6 @@ def openLogin():
     root.destroy()
     import LoginFrom
 
-
-# Functions
 def register_user():
     username = userNameEnt.get()
     email = emailEnt.get()
@@ -140,9 +138,6 @@ re_passwordEnt = Entry(card,
     bg="#fff",
     bd=1,font=("Arial",12),relief = "solid",show="*" )
 re_passwordEnt.place(x=22,y=430, width=400,height=35)
-
-
-
 Label(card,text="Mobile",
       bg="#fff",
       fg="#555",
@@ -152,8 +147,6 @@ phoneEnt = Entry(card,
     bg="#fff",
     bd=1,font=("Arial",12),relief = "solid" )
 phoneEnt.place(x=22,y=510, width=400,height=35)
-
-
 # ----------------
 #  Button
 # ----------------

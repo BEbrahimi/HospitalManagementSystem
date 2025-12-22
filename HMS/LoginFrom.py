@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, Image
 from PIL import Image, ImageTk
-
+from db.databaseConnection import get_connection
 # -------------------------
 # All Functions
 # -------------------------
@@ -9,6 +9,37 @@ def goToReg():
     root.destroy()
     import registerFrom
 
+
+def loginUser():
+    username = username_entry.get()
+    password = password_entry.get()
+
+    if username == "" or password == "":
+        messagebox.showerror("Error", "All fields are required")
+        return
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT * FROM hms_users 
+        WHERE (email=%s OR fullname=%s) AND password=%s
+        """
+        cursor.execute(query, (username, username, password))
+        result = cursor.fetchone()
+
+        conn.close()
+
+        if result:
+            messagebox.showinfo("Success", "Login Successful")
+            root.destroy()
+            # import dashboard   # open next window
+        else:
+            messagebox.showerror("Error", "Invalid username or password")
+
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
 
 
 # -------------------------
@@ -85,7 +116,7 @@ forgot.place(x=22, y=300)
 login_btn = tk.Button(card, text="LOGIN",
                       bg="#0a9cff", fg="white",
                       font=("Arial", 12, "bold"),
-                      bd=0, height=2)
+                      bd=0, height=2,command=loginUser)
 login_btn.place(x=180, y=350, width= 80)
 
 
@@ -99,11 +130,11 @@ tk.Label(card, text="Don't have an account?",
          bg="white", fg="#555",
          font=("Arial", 9)).place(x=120, y=410)
 
-login_btn = tk.Button(card, text="Click here",
+backBtn = tk.Button(card, text="Click here",
                       bg="white", fg="#555",
                       font=("Arial", 9),
                       bd=0,cursor="hand2",command=goToReg)
-login_btn.place(x=250, y=410, width= 95)
+backBtn.place(x=250, y=410, width= 95)
 
 
 # -------------------------
