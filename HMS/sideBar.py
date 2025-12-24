@@ -1,7 +1,7 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 
-from common.dashboard import dashboard_items
+from pages.dashboard import dashboard_items
 # =======================
 # Root Window
 # =======================
@@ -65,14 +65,20 @@ main.pack(fill="both", expand=True)
 # =======================
 # SIDEBAR
 # =======================
-sidebar = tk.Frame(main, bg="#0d6efd", width=220)
-sidebar.pack(side="left", fill="y")
+sidebar_width = 200
 
-# tk.Label(
-#     sidebar, text="Main",
-#     bg="white",
-#     font=("Segoe UI", 11, "bold")
-# ).pack(anchor="w", padx=20, pady=10)
+sidebar = tk.Frame(main, bg="#ffffff", width=sidebar_width)
+sidebar.pack(side="left", fill="y")
+sidebar.pack_propagate(False)   # خیلی مهم
+shadow = tk.Frame(main, bg="#d9d9d9", width=3)
+shadow.pack(side="left", fill="y")
+shadow.pack_propagate(False)
+
+tk.Label(
+    sidebar, text="Main",
+    bg="white",
+    font=("Segoe UI", 11, "bold")
+).pack(anchor="w", padx=20, pady=10)
 
 # =======================
 # CONTENT AREA
@@ -158,17 +164,20 @@ def toggle_accounts():
 # Sidebar Buttons
 # =======================
 
-dLogo = ImageTk.PhotoImage(file="icon/dashboard.png")
+dLogo = ImageTk.PhotoImage(file="icon/dashboardColor.png")
 doctor = ImageTk.PhotoImage(file="icon/doctor.png")
-patient = ImageTk.PhotoImage(file="icon/patient.png")
+patients = ImageTk.PhotoImage(file="icon/patients.png")
+appointments = ImageTk.PhotoImage(file="icon/appointment.png")
+accounts = ImageTk.PhotoImage(file="icon/accounts.png")
+
 
 tk.Button(
     sidebar,
     image=dLogo,
     text="Dashboard",
     compound="left",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 11),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat", anchor="w",
     padx=6,
     command=show_dashboard
@@ -179,8 +188,8 @@ tk.Button(
     sidebar, image= doctor,
     compound="left",
     text="Doctors",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 11),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat", anchor="w",
     padx=6,
     command=show_doctors
@@ -188,34 +197,39 @@ tk.Button(
 
 tk.Button(
     sidebar,
-    image= patient,
+    image= patients,
     compound="left",
     text="Patients",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 11),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat", anchor="w",
     padx=6,
     command=show_patients
 ).pack(fill="x", pady=4)
 
 tk.Button(
-    sidebar, text="Appointments",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 11),
+    sidebar,
+    image=appointments,
+    compound="left",
+    text="Appointments",
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat", anchor="w",
-    padx=20,
+    padx=6,
     command=show_appointments
 ).pack(fill="x", pady=4)
 
 # ---------- Accounts Dropdown ----------
 accounts_btn = tk.Button(
     sidebar,
+    image= accounts,
+    compound="left",
     text="Accounts ⌄",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 11),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat",
     anchor="w",
-    padx=20,
+    padx=6,
     command=toggle_accounts
 )
 accounts_btn.pack(fill="x", pady=4)
@@ -225,8 +239,8 @@ accounts_submenu = tk.Frame(sidebar, bg="#f2f2f2")
 tk.Button(
     accounts_submenu,
     text="Invoices",
-    bg="#0d6efd", fg="#fff",
-    font=("Segoe UI", 10),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat",
     anchor="w",
     padx=30,
@@ -236,9 +250,8 @@ tk.Button(
 tk.Button(
     accounts_submenu,
     text="Payments",
-    bg="#f2f2f2",
-    fg="#555",
-    font=("Segoe UI", 10),
+    bg="#fff", fg="#888",
+    font=("Segoe UI", 11,"bold"),
     relief="flat",
     anchor="w",
     padx=30,
