@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image,ImageTk
+import bcrypt
 from db.databaseConnection import get_connection
 
 # ----------------
@@ -33,18 +34,31 @@ def register_user():
         con = get_connection()
         cur = con.cursor()
 
-        sql = """INSERT INTO hms_users (fullName, email, password, phone)
-                 VALUES (%s, %s, %s, %s)"""
-        values = (username, email, password, phone)
+        # 🔍 check email
+        cur.execute("SELECT id FROM hms_users WHERE email = %s", (email,))
+        if cur.fetchone():
+            messagebox.showwarning("Warning", "This email is already registered!")
+            return
 
-        cur.execute(sql, values)
+        # 🔐 hash password
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        )
+
+        # ➕ insert user
+        add_user = """
+                INSERT INTO hms_users (fullName, email, password, phone)
+                VALUES (%s, %s, %s, %s)
+                """
+        values = (username, email, hashed_password, phone)
+        cur.execute(add_user, values)
         con.commit()
 
         messagebox.showinfo("Success", "Registration Successful")
 
         cur.close()
         con.close()
-
     except Exception as e:
         messagebox.showerror("Database Error", str(e))
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, Image
 from PIL import Image, ImageTk
+import bcrypt
 from db.databaseConnection import get_connection
 # -------------------------
 # All Functions
@@ -22,25 +23,31 @@ def loginUser():
         conn = get_connection()
         cursor = conn.cursor()
 
+        # ❗ فقط کاربر را بگیر (نه پسورد)
         query = """
-        SELECT * FROM hms_users 
-        WHERE (email=%s OR fullname=%s) AND password=%s
+        SELECT password FROM hms_users
+        WHERE email=%s OR fullName=%s
         """
-        cursor.execute(query, (username, username, password))
+        cursor.execute(query, (username, username))
         result = cursor.fetchone()
 
         conn.close()
 
         if result:
-            messagebox.showinfo("Success", "Login Successful")
-            root.destroy()
-            # import dashboard   # open next window
+            stored_password = result[0]  # هش ذخیره‌شده در دیتابیس
+
+            # 🔐 check bcrypt
+            if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+                messagebox.showinfo("Success", "Login Successful")
+                root.destroy()
+                # import dashboard
+            else:
+                messagebox.showerror("Error", "Invalid username or password")
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
     except Exception as e:
         messagebox.showerror("Database Error", str(e))
-
 
 # -------------------------
 # Main Window
