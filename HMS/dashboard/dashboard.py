@@ -2,8 +2,8 @@ import os
 import tkinter as tk
 from PIL import Image, ImageTk
 
-from HMS.pages.appointments import create_upcoming_appointments
-from HMS.pages.doctors import create_doctors_section
+from HMS.dashboard.appointments import create_upcoming_appointments
+from HMS.dashboard.doctors import create_doctors_section
 
 
 def dashboard_items(content_frame):
@@ -21,7 +21,7 @@ def dashboard_items(content_frame):
     card.pack_propagate(False)
 
     # ---------- Load Doctor Icon ----------
-    current_dir = os.path.dirname(__file__)  # HMS/pages
+    current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
     icon_path = os.path.join(base_dir, "icon", "doctor_icon.png")
 
@@ -66,7 +66,7 @@ def dashboard_items(content_frame):
     patients.pack_propagate(False)
 
     # ---------- Load Doctor Icon ----------
-    current_dir = os.path.dirname(__file__)  # HMS/pages
+    current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
     icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
 
@@ -111,7 +111,7 @@ def dashboard_items(content_frame):
     attend.pack_propagate(False)
 
     # ---------- Load Doctor Icon ----------
-    current_dir = os.path.dirname(__file__)  # HMS/pages
+    current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
     icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
 
@@ -156,7 +156,7 @@ def dashboard_items(content_frame):
     pending.pack_propagate(False)
 
     # ---------- Load Doctor Icon ----------
-    current_dir = os.path.dirname(__file__)  # HMS/pages
+    current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
     icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
 

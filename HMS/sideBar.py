@@ -1,7 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 
-from pages.dashboard import dashboard_items
+from HMS.doctors.doctorsPage import doctors_items
+from dashboard.dashboard import dashboard_items
 # =======================
 # Root Window
 # =======================
@@ -102,12 +103,7 @@ def show_dashboard():
 
 def show_doctors():
     clear_content()
-    tk.Label(
-        content_frame,
-        text="👨‍⚕️ Doctors Page",
-        font=("Segoe UI", 20, "bold"),
-        bg="#f5f7fa"
-    ).pack(pady=40)
+    doctors_items(content_frame)
 
 def show_patients():
     clear_content()
