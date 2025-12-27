@@ -3,32 +3,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 def doctors_items(content_frame):
-    # =========================
-    # TOP BAR (Title + Button)
-    # =========================
-    top_bar = tk.Frame(content_frame, bg="#f5f7fa", height=60)
-    top_bar.pack(fill="x", padx=20, pady=(10, 0))
 
-    tk.Label(
-        top_bar,
-        text="Doctors",
-        bg="#f5f7fa",
-        fg="#000",
-        font=("Segoe UI", 18, "bold")
-    ).pack(side="left")
-
-    add_btn = tk.Button(
-        top_bar,
-        text="+ Add Doctor",
-        bg="#0d6efd",
-        fg="white",
-        font=("Segoe UI", 10, "bold"),
-        relief="flat",
-        padx=16,
-        pady=6,
-        cursor="hand2"
-    )
-    add_btn.pack(side="right")
 
     # =========================
     # CARDS CONTAINER
