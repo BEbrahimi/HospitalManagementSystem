@@ -23,7 +23,7 @@ def dashboard_items(content_frame):
     # ---------- Load Doctor Icon ----------
     current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
-    icon_path = os.path.join(base_dir, "icon", "doctor_icon.png")
+    icon_path = os.path.join(base_dir, "icon", "doctors1.png")
 
     img = Image.open(icon_path)
     img = img.resize((60, 60))
@@ -68,7 +68,7 @@ def dashboard_items(content_frame):
     # ---------- Load Doctor Icon ----------
     current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
-    icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
+    icon_path = os.path.join(base_dir, "icon", "patients1.png")
 
     img = Image.open(icon_path)
     img = img.resize((60, 60))
@@ -113,7 +113,7 @@ def dashboard_items(content_frame):
     # ---------- Load Doctor Icon ----------
     current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
-    icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
+    icon_path = os.path.join(base_dir, "icon", "attents.png")
 
     img = Image.open(icon_path)
     img = img.resize((60, 60))
@@ -158,7 +158,7 @@ def dashboard_items(content_frame):
     # ---------- Load Doctor Icon ----------
     current_dir = os.path.dirname(__file__)  # HMS/dashboard
     base_dir = os.path.dirname(current_dir)  # HMS
-    icon_path = os.path.join(base_dir, "icon", "dashboardColor.png")
+    icon_path = os.path.join(base_dir, "icon", "pending.png")
 
     img = Image.open(icon_path)
     img = img.resize((60, 60))

@@ -2,15 +2,18 @@ import os
 import tkinter as tk
 from PIL import Image, ImageTk
 
+
 def doctors_items(content_frame):
 
-
     # =========================
-    # CARDS CONTAINER
+    # CONTAINER FOR ALL CARDS
     # =========================
     cards_frame = tk.Frame(content_frame, bg="#f5f7fa")
     cards_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
+    # =========================
+    # DOCTORS DATA
+    # =========================
     doctors = [
         ("Harshita", "Gynecologist", "Pune India", "doctor1.png"),
         ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
@@ -26,20 +29,29 @@ def doctors_items(content_frame):
         ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
     ]
 
+    # =========================
+    # CARD LAYOUT SETTINGS
+    # =========================
     card_width = 240
-    card_height = 160
-    gap_x = 50
+    card_height = 170
+    gap_x = 40
     gap_y = 20
     cols = 4
 
-    for index, (name, role, location, img_path) in enumerate(doctors):
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # =========================
+    # CREATE CARDS
+    # =========================
+    for index, (name, role, location, img_name) in enumerate(doctors):
+
         row = index // cols
         col = index % cols
 
         x = col * (card_width + gap_x)
         y = row * (card_height + gap_y)
 
-        # ---------- Card ----------
+        # ---------- CARD ----------
         card = tk.Frame(
             cards_frame,
             bg="white",
@@ -51,27 +63,31 @@ def doctors_items(content_frame):
         card.place(x=x, y=y)
         card.pack_propagate(False)
 
-        # ---------- Menu ----------
-        tk.Label(
+        # ---------- MENU ICON ----------
+        tk.Button(
             card,
+            bd=0,
             text="⋮",
             bg="white",
             fg="#777",
             font=("Segoe UI", 14)
-        ).place(x=210, y=10)
+        ).place(x=210, y=8)
 
-        # ---------- Avatar ----------
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        # ---------- AVATAR ----------
+        image_path = os.path.join(BASE_DIR, "..", "image", img_name)
 
-        img_path = os.path.join(BASE_DIR, "..", "image", "doctor-03.jpg")
-        img = Image.open(img_path).resize((60, 60))
+        # اگر عکس وجود نداشت، تصویر پیش‌فرض
+        if not os.path.exists(image_path):
+            image_path = os.path.join(BASE_DIR, "..", "image", "doctor-thumb-01.jpg")
+
+        img = Image.open(image_path).resize((60, 60))
         photo = ImageTk.PhotoImage(img)
 
         avatar = tk.Label(card, image=photo, bg="white")
-        avatar.image = photo
-        avatar.pack(pady=(15, 5))
+        avatar.image = photo  # جلوگیری از حذف شدن عکس
+        avatar.pack(pady=(18, 6))
 
-        # ---------- Name ----------
+        # ---------- NAME ----------
         tk.Label(
             card,
             text=name,
@@ -80,7 +96,7 @@ def doctors_items(content_frame):
             font=("Segoe UI", 11, "bold")
         ).pack()
 
-        # ---------- Role ----------
+        # ---------- ROLE ----------
         tk.Label(
             card,
             text=role,
@@ -89,7 +105,7 @@ def doctors_items(content_frame):
             font=("Segoe UI", 9)
         ).pack()
 
-        # ---------- Location ----------
+        # ---------- LOCATION ----------
         tk.Label(
             card,
             text=f"📍 {location}",
@@ -97,5 +113,3 @@ def doctors_items(content_frame):
             fg="#777",
             font=("Segoe UI", 9)
         ).pack(pady=(4, 0))
-
-

@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 
@@ -45,7 +46,14 @@ def add_doctor_form(content_frame):
     form_area = scrollable_frame(content_frame)
 
     container = tk.Frame(form_area, bg="white")
-    container.pack(fill="both", expand=True, padx=20, pady=20)
+    container.pack(fill="both", expand=True, padx=20)
+
+    container.grid_columnconfigure(0, weight=1, uniform="x")
+    container.grid_columnconfigure(1, weight=1, uniform="x")
+    container.grid_columnconfigure(2, weight=1, uniform="x")
+    container.grid_columnconfigure(3, weight=1, uniform="x")
+
+
     # ================= Title =================
     tk.Label(
         container,
@@ -54,113 +62,208 @@ def add_doctor_form(content_frame):
         fg="#333",
         font=("Segoe UI", 18, "bold")
     ).grid(row=0, column=0, columnspan=4, sticky="w", pady=(0, 20))
+    # =========================
+    # VARIABLES
+    # =========================
+    gender_var = tk.StringVar(value="Male")
+    status_var = tk.StringVar(value="Active")
+    country_var = tk.StringVar()
+    state_var = tk.StringVar()
+    avatar_path_var = tk.StringVar(value="No file chosen")
+    selected_avatar_path = None
 
-    # ================= Helpers =================
-    def label(text, r, c, req=False):
+    # =========================
+    # GRID CONFIG
+    # =========================
+    for i in range(4):
+        container.columnconfigure(i, weight=1, uniform="x")
+
+    # =========================
+    # HELPERS
+    # =========================
+    def create_label(text, row, col, required=False):
         tk.Label(
             container,
-            text=text + (" *" if req else ""),
+            text=text + (" *" if required else ""),
             bg="white",
             fg="#444",
             font=("Segoe UI", 10)
-        ).grid(row=r, column=c, sticky="w", pady=(8, 4))
+        ).grid(row=row, column=col, sticky="w", pady=(8, 4), padx=10)
 
-    def entry(r, c, colspan=1, show=None):
-        e = tk.Entry(container, font=("Segoe UI", 10), relief="solid", bd=1)
+    def create_entry(row, col, colspan=1, show=None):
+        ent = tk.Entry(
+            container,
+            font=("Segoe UI", 10),
+            relief="solid",
+            bd=1
+        )
         if show:
-            e.config(show=show)
-        e.grid(row=r, column=c, columnspan=colspan,
-               sticky="we", padx=(0, 20), ipady=6)
-        return e
+            ent.config(show=show)
 
-    for i in range(4):
-        container.columnconfigure(i, weight=1)
+        ent.grid(
+            row=row,
+            column=col,
+            columnspan=colspan,
+            sticky="we",
+            padx=10,
+            ipady=6
+        )
+        return ent
 
-    # ================= Basic Info =================
-    label("First Name", 1, 0, True)
-    label("Last Name", 1, 2)
-    entry(2, 0, 2)
-    entry(2, 2, 2)
+    def shorten_filename(name, max_len=30):
+        return name if len(name) <= max_len else name[:max_len - 3] + "..."
 
-    label("Username", 3, 0, True)
-    label("Email", 3, 2, True)
-    entry(4, 0, 2)
-    entry(4, 2, 2)
+    # =========================
+    # BASIC INFO
+    # =========================
+    create_label("First Name", 1, 0, True)
+    create_label("Last Name", 1, 2)
 
-    label("Password", 5, 0)
-    label("Confirm Password", 5, 2)
-    entry(6, 0, 2, show="*")
-    entry(6, 2, 2, show="*")
+    first_name_ent = create_entry(2, 0, 2)
+    last_name_ent = create_entry(2, 2, 2)
 
-    label("Date of Birth", 7, 0)
-    label("Gender:", 7, 2)
-    entry(8, 0, 2)
+    create_label("Username", 3, 0, True)
+    create_label("Email", 3, 2, True)
 
-    gender = tk.StringVar(value="Male")
-    tk.Radiobutton(container, text="Male", variable=gender,
-                   value="Male", bg="white").grid(row=8, column=2, sticky="w")
-    tk.Radiobutton(container, text="Female", variable=gender,
-                   value="Female", bg="white").grid(row=8, column=3, sticky="w")
+    username_ent = create_entry(4, 0, 2)
+    email_ent = create_entry(4, 2, 2)
 
-    # ================= Address =================
-    label("Address", 9, 0)
-    entry(10, 0, 4)
+    create_label("Password", 5, 0)
+    create_label("Confirm Password", 5, 2)
 
-    # ================= Location =================
-    label("Country", 11, 0)
-    label("City", 11, 1)
-    label("State/Province", 11, 2)
-    label("Postal Code", 11, 3)
+    password_ent = create_entry(6, 0, 2, show="*")
+    confirm_password_ent = create_entry(6, 2, 2, show="*")
 
-    ttk.Combobox(container, values=["USA", "India", "Afghanistan"]) \
-        .grid(row=12, column=0, sticky="we", padx=(0, 10))
-    entry(12, 1)
-    ttk.Combobox(container, values=["California", "Delhi", "Kabul"]) \
-        .grid(row=12, column=2, sticky="we", padx=(0, 10))
-    entry(12, 3)
+    # =========================
+    # DATE & GENDER
+    # =========================
+    create_label("Date of Birth", 7, 0)
+    create_label("Gender", 7, 2)
 
-    # ================= Phone & Avatar =================
-    label("Phone", 13, 0)
-    entry(14, 0, 2)
+    dob_ent = create_entry(8, 0, 2)
 
-    label("Avatar", 13, 2)
+    tk.Radiobutton(
+        container, text="Male",
+        variable=gender_var, value="Male",
+        bg="white"
+    ).grid(row=8, column=2, sticky="w", padx=10)
 
-    avatar_img = tk.Label(container, bg="#eee", width=50, height=3)
-    avatar_img.grid(row=14, column=2, sticky="w")
+    tk.Radiobutton(
+        container, text="Female",
+        variable=gender_var, value="Female",
+        bg="white"
+    ).grid(row=8, column=3, sticky="w", padx=10)
+
+    # =========================
+    # ADDRESS
+    # =========================
+    create_label("Address", 9, 0)
+    address_ent = create_entry(10, 0, 4)
+
+    # =========================
+    # LOCATION
+    # =========================
+    create_label("Country", 11, 0)
+    create_label("City", 11, 1)
+    create_label("State / Province", 11, 2)
+    create_label("Postal Code", 11, 3)
+
+    style = ttk.Style()
+    style.configure("Custom.TCombobox", padding=6)
+
+    country_cb = ttk.Combobox(
+        container,
+        textvariable=country_var,
+        values=["USA", "India", "Afghanistan"],
+        style="Custom.TCombobox"
+    )
+    country_cb.grid(row=12, column=0, sticky="we", padx=10, ipady=4)
+
+    city_ent = create_entry(12, 1)
+
+    state_cb = ttk.Combobox(
+        container,
+        textvariable=state_var,
+        values=["California", "Delhi", "Kabul"],
+        style="Custom.TCombobox"
+    )
+    state_cb.grid(row=12, column=2, sticky="we", padx=10, ipady=4)
+
+    postal_ent = create_entry(12, 3)
+
+    # =========================
+    # PHONE & AVATAR
+    # =========================
+    create_label("Phone", 13, 0)
+    phone_ent = create_entry(14, 0, 2)
+
+    create_label("Avatar", 13, 2)
+
+    avatar_lbl = tk.Label(
+        container,
+        textvariable=avatar_path_var,
+        bg="#f0f0f0",
+        anchor="w",
+        padx=10,
+        font=("Segoe UI", 9),
+        width=32,
+        relief="solid",
+        bd=1
+    )
+    avatar_lbl.grid(row=14, column=2, sticky="we", padx=10)
 
     def choose_image():
-        file = filedialog.askopenfilename(
-            filetypes=[("Images", "*.png *.jpg *.jpeg")]
+        global selected_avatar_path
+        selected_avatar_path = filedialog.askopenfilename(
+            title="Select Avatar Image",
+            filetypes=[("Image Files", "*.png *.jpg *.jpeg")]
         )
-        if file:
-            img = Image.open(file).resize((20, 20))
-            photo = ImageTk.PhotoImage(img)
-            avatar_img.config(image=photo)
-            avatar_img.image = photo
+
+        if selected_avatar_path:
+            filename = os.path.basename(selected_avatar_path)
+            avatar_path_var.set(shorten_filename(filename))
+            print("Selected Image Path:", selected_avatar_path)
 
     tk.Button(
         container,
-        text="Choose file",
+        text="Choose File",
         command=choose_image
-    ).grid(row=14, column=3, sticky="w")
+    ).grid(row=14, column=3, sticky="w", padx=10)
 
-    # ================= Biography =================
-    label("Short Biography", 15, 0)
-    bio = tk.Text(container, height=4, font=("Segoe UI", 10),
-                  relief="solid", bd=1)
-    bio.grid(row=16, column=0, columnspan=4,
-             sticky="we", pady=(0, 10))
+    # =========================
+    # BIOGRAPHY
+    # =========================
+    create_label("Short Biography", 15, 0)
 
-    # ================= Status =================
-    label("Status", 17, 0)
-    status = tk.StringVar(value="Active")
+    bio_txt = tk.Text(
+        container,
+        height=4,
+        font=("Segoe UI", 10),
+        relief="solid",
+        bd=1
+    )
+    bio_txt.grid(row=16, column=0, columnspan=4, sticky="we", padx=10, pady=(0, 10))
 
-    tk.Radiobutton(container, text="Active", variable=status,
-                   value="Active", bg="white").grid(row=18, column=0, sticky="w")
-    tk.Radiobutton(container, text="Inactive", variable=status,
-                   value="Inactive", bg="white").grid(row=18, column=1, sticky="w")
+    # =========================
+    # STATUS
+    # =========================
+    create_label("Status", 17, 0)
 
-    # ================= Submit =================
+    tk.Radiobutton(
+        container, text="Active",
+        variable=status_var, value="Active",
+        bg="white"
+    ).grid(row=18, column=0, sticky="w", padx=10)
+
+    tk.Radiobutton(
+        container, text="Inactive",
+        variable=status_var, value="Inactive",
+        bg="white"
+    ).grid(row=18, column=1, sticky="w", padx=10)
+
+    # =========================
+    # SUBMIT
+    # =========================
     tk.Button(
         container,
         text="CREATE DOCTOR",
