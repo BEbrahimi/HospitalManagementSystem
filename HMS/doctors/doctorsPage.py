@@ -76,7 +76,7 @@ def doctors_items(content_frame):
         # ---------- AVATAR ----------
         image_path = os.path.join(BASE_DIR, "..", "image", img_name)
 
-        # اگر عکس وجود نداشت، تصویر پیش‌فرض
+
         if not os.path.exists(image_path):
             image_path = os.path.join(BASE_DIR, "..", "image", "doctor-thumb-01.jpg")
 
@@ -84,7 +84,7 @@ def doctors_items(content_frame):
         photo = ImageTk.PhotoImage(img)
 
         avatar = tk.Label(card, image=photo, bg="white")
-        avatar.image = photo  # جلوگیری از حذف شدن عکس
+        avatar.image = photo
         avatar.pack(pady=(18, 6))
 
         # ---------- NAME ----------

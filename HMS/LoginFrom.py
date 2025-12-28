@@ -23,7 +23,7 @@ def loginUser():
         conn = get_connection()
         cursor = conn.cursor()
 
-        # ❗ فقط کاربر را بگیر (نه پسورد)
+
         query = """
         SELECT password FROM hms_users
         WHERE email=%s OR fullName=%s
@@ -34,9 +34,9 @@ def loginUser():
         conn.close()
 
         if result:
-            stored_password = result[0]  # هش ذخیره‌شده در دیتابیس
+            stored_password = result[0]
 
-            # 🔐 check bcrypt
+            # check bcrypt
             if bcrypt.checkpw(password.encode('utf-8'), stored_password):
                 messagebox.showinfo("Success", "Login Successful")
                 root.destroy()

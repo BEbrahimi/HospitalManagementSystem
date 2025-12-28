@@ -1,11 +1,7 @@
 import os
-import tkinter as tk
-from tkinter import ttk
 
 import tkinter as tk
 from tkinter import ttk, filedialog
-from PIL import Image, ImageTk
-
 def scrollable_frame(parent):
     canvas = tk.Canvas(
         parent,
@@ -36,7 +32,7 @@ def scrollable_frame(parent):
 
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    # ⭐ بسیار مهم: بدون padding
+    #  padding
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 

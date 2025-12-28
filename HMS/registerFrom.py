@@ -40,7 +40,7 @@ def register_user():
             messagebox.showwarning("Warning", "This email is already registered!")
             return
 
-        # 🔐 hash password
+        #  hash password
         hashed_password = bcrypt.hashpw(
             password.encode('utf-8'),
             bcrypt.gensalt()
