@@ -1,7 +1,73 @@
 import os
-
+import shutil
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
+import bcrypt
+from HMS.db.databaseConnection import get_connection
+
+def add_doc(
+    first_name_ent, last_name_ent, username_ent, email_ent,
+    password_ent, confirm_password_ent, dob_ent, gender_var,
+    address_ent, country_var, city_ent, state_var, postal_ent,
+    phone_ent, bio_txt, status_var, avatar_path_var
+):
+    first_name = first_name_ent.get()
+    last_name = last_name_ent.get()
+    username = username_ent.get()
+    email = email_ent.get()
+    password = password_ent.get()
+    confirm_password = confirm_password_ent.get()
+    dob = dob_ent.get()
+    gender = gender_var.get()
+    address = address_ent.get()
+    country = country_var.get()
+    city = city_ent.get()
+    state = state_var.get()
+    postal = postal_ent.get()
+    phone = phone_ent.get()
+    bio = bio_txt.get("1.0", "end-1c")
+    status = status_var.get()
+    avatar = avatar_path_var.get()
+
+
+    if not username or not email or not password or not phone:
+        messagebox.showerror("Error", "All fields are required")
+        return
+
+    if password != confirm_password:
+        messagebox.showerror("Error", "Passwords do not match")
+        return
+
+    if len(password)<8:
+        messagebox.showerror("Error", "Passwords is week")
+        return
+
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        #  hash password
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        )
+        # ➕ insert Doctor
+        add_doctor = """
+                INSERT INTO doctors (first_name, last_name, username, email, password, dob, Gender, address, city, postal, phone, image, bio, status)
+                VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s)
+                """
+        values = (first_name,last_name,username,email,hashed_password,dob,gender,address,city,postal,phone,avatar,bio,status)
+        cur.execute(add_doctor, values)
+        con.commit()
+
+        messagebox.showinfo("Success", "Registration Successful")
+
+        cur.close()
+        con.close()
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
+
+
 def scrollable_frame(parent):
     canvas = tk.Canvas(
         parent,
@@ -208,18 +274,56 @@ def add_doctor_form(content_frame):
     )
     avatar_lbl.grid(row=14, column=2, sticky="we", padx=10)
 
+    saved_avatar_path = None
+
     def choose_image():
-        global selected_avatar_path
+        global selected_avatar_path, saved_avatar_path
+
         selected_avatar_path = filedialog.askopenfilename(
             title="Select Avatar Image",
             filetypes=[("Image Files", "*.png *.jpg *.jpeg")]
         )
 
-        if selected_avatar_path:
-            filename = os.path.basename(selected_avatar_path)
-            avatar_path_var.set(shorten_filename(filename))
-            print("Selected Image Path:", selected_avatar_path)
+        if not selected_avatar_path:
+            return
 
+        # =========================
+        # IMAGE FOLDER
+        # =========================
+        images_dir = "image/doctors"
+        os.makedirs(images_dir, exist_ok=True)
+
+        # =========================
+        # KEEP ORIGINAL FILE NAME
+        # =========================
+        image_name = os.path.basename(selected_avatar_path)
+        saved_avatar_path = os.path.join(images_dir, image_name)
+
+        # =========================
+        # CHECK DUPLICATE FILE
+        # =========================
+        if os.path.exists(saved_avatar_path):
+            messagebox.showwarning(
+                "Duplicate Image",
+                "Please select another image it is duplicate"
+            )
+            return
+
+        # =========================
+        # COPY IMAGE
+        # =========================
+        try:
+            shutil.copy(selected_avatar_path, saved_avatar_path)
+        except Exception as e:
+            messagebox.showerror("Image Error", str(e))
+            return
+
+        # =========================
+        # SHOW FILE NAME
+        # =========================
+        avatar_path_var.set(shorten_filename(image_name))
+
+        print("Saved Image Path:", saved_avatar_path)
     tk.Button(
         container,
         text="Choose File",
@@ -269,5 +373,24 @@ def add_doctor_form(content_frame):
         relief="flat",
         padx=30,
         pady=10,
-        cursor="hand2"
+        cursor="hand2",
+        command=lambda: add_doc(
+            first_name_ent,
+            last_name_ent,
+            username_ent,
+            email_ent,
+            password_ent,
+            confirm_password_ent,
+            dob_ent,
+            gender_var,
+            address_ent,
+            country_var,
+            city_ent,
+            state_var,
+            postal_ent,
+            phone_ent,
+            bio_txt,
+            status_var,
+            avatar_path_var
+        )
     ).grid(row=19, column=0, columnspan=4, pady=30)
