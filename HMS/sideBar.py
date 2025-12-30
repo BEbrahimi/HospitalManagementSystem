@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 
+from HMS.Patients.Patienslist import patient_list
+from HMS.Patients.addPatients import add_patient_form
 from HMS.doctors.addDoctor import add_doctor_form
 from HMS.doctors.doctorsPage import doctors_items
 from dashboard.dashboard import dashboard_items
@@ -137,14 +139,42 @@ def show_doctors():
     add_btn.pack(side="right")
     doctors_items(content_frame)
 
+def show_add_patient():
+    clear_content()
+    add_patient_form(content_frame)
+
+
+
 def show_patients():
     clear_content()
+    # =========================
+    # TOP BAR (Title + Button)
+    # =========================
+    top_bar = tk.Frame(content_frame, bg="#f5f7fa", height=60)
+    top_bar.pack(fill="x", padx=20, pady=(10, 0))
+
     tk.Label(
-        content_frame,
-        text="🧑 Patients Page",
-        font=("Segoe UI", 20, "bold"),
-        bg="#f5f7fa"
-    ).pack(pady=40)
+        top_bar,
+        text=" Patients ",
+        bg="#f5f7fa",
+        fg="#000",
+        font=("Segoe UI", 18, "bold")
+    ).pack(side="left")
+
+    add_btn = tk.Button(
+        top_bar,
+        text="+ Add Patients",
+        bg="#0d6efd",
+        fg="white",
+        font=("Segoe UI", 10, "bold"),
+        relief="flat",
+        padx=16,
+        pady=6,
+        cursor="hand2",
+        command=show_add_patient,
+    )
+    add_btn.pack(side="right")
+    patient_list(content_frame)
 
 def show_appointments():
     clear_content()

@@ -6,13 +6,13 @@ import bcrypt
 from HMS.db.databaseConnection import get_connection
 
 def add_doc(
-    first_name_ent, last_name_ent, username_ent, email_ent,
+    full_name_ent, roles_ent, username_ent, email_ent,
     password_ent, confirm_password_ent, dob_ent, gender_var,
     address_ent, country_var, city_ent, state_var, postal_ent,
     phone_ent, bio_txt, status_var, avatar_path_var
 ):
-    first_name = first_name_ent.get()
-    last_name = last_name_ent.get()
+    full_name = full_name_ent.get()
+    roles = roles_ent.get()
     username = username_ent.get()
     email = email_ent.get()
     password = password_ent.get()
@@ -53,10 +53,10 @@ def add_doc(
         )
         # ➕ insert Doctor
         add_doctor = """
-                INSERT INTO doctors (first_name, last_name, username, email, password, dob, Gender, address, city, postal, phone, image, bio, status)
-                VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s)
+                INSERT INTO doctors (full_name, roles, username, email, password, dob, Gender, address,counter, city, state,postal, phone, image, bio, status)
+                VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s)
                 """
-        values = (first_name,last_name,username,email,hashed_password,dob,gender,address,city,postal,phone,avatar,bio,status)
+        values = (full_name,roles,username,email,hashed_password,dob,gender,address,country,state, city,postal,phone,avatar,bio,status)
         cur.execute(add_doctor, values)
         con.commit()
 
@@ -178,11 +178,11 @@ def add_doctor_form(content_frame):
     # =========================
     # BASIC INFO
     # =========================
-    create_label("First Name", 1, 0, True)
-    create_label("Last Name", 1, 2)
+    create_label("Full Name", 1, 0, True)
+    create_label("Roles", 1, 2)
 
-    first_name_ent = create_entry(2, 0, 2)
-    last_name_ent = create_entry(2, 2, 2)
+    full_name_ent = create_entry(2, 0, 2)
+    roles_ent = create_entry(2, 2, 2)
 
     create_label("Username", 3, 0, True)
     create_label("Email", 3, 2, True)
@@ -290,7 +290,7 @@ def add_doctor_form(content_frame):
         # =========================
         # IMAGE FOLDER
         # =========================
-        images_dir = "image/doctors"
+        images_dir = "image"
         os.makedirs(images_dir, exist_ok=True)
 
         # =========================
@@ -375,8 +375,8 @@ def add_doctor_form(content_frame):
         pady=10,
         cursor="hand2",
         command=lambda: add_doc(
-            first_name_ent,
-            last_name_ent,
+            full_name_ent,
+            roles_ent,
             username_ent,
             email_ent,
             password_ent,

@@ -1,7 +1,34 @@
 import os
 import tkinter as tk
-from PIL import Image, ImageTk
+from tkinter import messagebox
 
+from PIL import Image, ImageTk
+from HMS.db.databaseConnection import get_connection
+
+
+
+def select_doctor():
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        query = """
+        SELECT full_name, roles, address, image
+        FROM doctors
+        ORDER BY id DESC
+        """
+        cur.execute(query)
+
+        doctors = cur.fetchall()
+
+        cur.close()
+        con.close()
+
+        return doctors
+
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
+        return []
 
 def doctors_items(content_frame):
 
@@ -14,20 +41,7 @@ def doctors_items(content_frame):
     # =========================
     # DOCTORS DATA
     # =========================
-    doctors = [
-        ("Harshita", "Gynecologist", "Pune India", "doctor1.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Harshita", "Gynecologist", "Pune India", "doctor1.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Harshita", "Gynecologist", "Pune India", "doctor1.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Harshita", "Gynecologist", "Pune India", "doctor1.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-        ("Fatima Alizada", "Psychiatrist", "Pune India", "doctor2.png"),
-    ]
+    doctors = select_doctor()
 
     # =========================
     # CARD LAYOUT SETTINGS
@@ -78,12 +92,12 @@ def doctors_items(content_frame):
 
 
         if not os.path.exists(image_path):
-            image_path = os.path.join(BASE_DIR, "..", "image", "doctor-thumb-01.jpg")
+            image_path = os.path.join(BASE_DIR, "..", "image", "user.jpg")
 
         img = Image.open(image_path).resize((60, 60))
         photo = ImageTk.PhotoImage(img)
 
-        avatar = tk.Label(card, image=photo, bg="white")
+        avatar = tk.Button(card, image=photo, bg="white",cursor= "hand2",bd=0)
         avatar.image = photo
         avatar.pack(pady=(18, 6))
 
