@@ -1,8 +1,34 @@
 import os
 import tkinter as tk
-from tkinter import ttk
-
+from tkinter import ttk, messagebox
 from PIL import ImageTk, Image
+from HMS.db.databaseConnection import get_connection
+
+
+def select_patients():
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        query = """
+        SELECT first_name, date_of_birth, address,phone,email
+        FROM patients
+        ORDER BY id DESC
+        """
+        cur.execute(query)
+
+        data = cur.fetchall()
+
+        cur.close()
+        con.close()
+
+        return data
+
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
+        return []
+
+
 
 
 def patient_list(content_frame):
@@ -10,9 +36,7 @@ def patient_list(content_frame):
     # =========================
     # SAMPLE DATA
     # =========================
-    data = [
-        ("Roshan", 35, "Pune university 411020", "724654554", "roshan@example.com")
-    ] * 13
+    data = select_patients()
 
     # =========================
     # VARIABLES

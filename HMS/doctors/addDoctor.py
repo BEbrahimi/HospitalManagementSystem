@@ -374,23 +374,4 @@ def add_doctor_form(content_frame):
         padx=30,
         pady=10,
         cursor="hand2",
-        command=lambda: add_doc(
-            full_name_ent,
-            roles_ent,
-            username_ent,
-            email_ent,
-            password_ent,
-            confirm_password_ent,
-            dob_ent,
-            gender_var,
-            address_ent,
-            country_var,
-            city_ent,
-            state_var,
-            postal_ent,
-            phone_ent,
-            bio_txt,
-            status_var,
-            avatar_path_var
-        )
     ).grid(row=19, column=0, columnspan=4, pady=30)

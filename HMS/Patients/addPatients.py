@@ -5,68 +5,67 @@ from tkinter import ttk, filedialog, messagebox
 import bcrypt
 from HMS.db.databaseConnection import get_connection
 
-# def add_patients(
-#     full_name_ent, roles_ent, username_ent, email_ent,
-#     password_ent, confirm_password_ent, dob_ent, gender_var,
-#     address_ent, country_var, city_ent, state_var, postal_ent,
-#     phone_ent, bio_txt, status_var, avatar_path_var
-# ):
-#     full_name = full_name_ent.get()
-#     roles = roles_ent.get()
-#     username = username_ent.get()
-#     email = email_ent.get()
-#     password = password_ent.get()
-#     confirm_password = confirm_password_ent.get()
-#     dob = dob_ent.get()
-#     gender = gender_var.get()
-#     address = address_ent.get()
-#     country = country_var.get()
-#     city = city_ent.get()
-#     state = state_var.get()
-#     postal = postal_ent.get()
-#     phone = phone_ent.get()
-#     bio = bio_txt.get("1.0", "end-1c")
-#     status = status_var.get()
-#     avatar = avatar_path_var.get()
-#
-#
-#     if not username or not email or not password or not phone:
-#         messagebox.showerror("Error", "All fields are required")
-#         return
-#
-#     if password != confirm_password:
-#         messagebox.showerror("Error", "Passwords do not match")
-#         return
-#
-#     if len(password)<8:
-#         messagebox.showerror("Error", "Passwords is week")
-#         return
-#
-#     try:
-#         con = get_connection()
-#         cur = con.cursor()
-#
-#         #  hash password
-#         hashed_password = bcrypt.hashpw(
-#             password.encode('utf-8'),
-#             bcrypt.gensalt()
-#         )
-#         # ➕ insert Doctor
-#         add_doctor = """
-#                 INSERT INTO doctors (full_name, roles, username, email, password, dob, Gender, address,counter, city, state,postal, phone, image, bio, status)
-#                 VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s, %s)
-#                 """
-#         values = (full_name,roles,username,email,hashed_password,dob,gender,address,country,state, city,postal,phone,avatar,bio,status)
-#         cur.execute(add_doctor, values)
-#         con.commit()
-#
-#         messagebox.showinfo("Success", "Registration Successful")
-#
-#         cur.close()
-#         con.close()
-#     except Exception as e:
-#         messagebox.showerror("Database Error", str(e))
-#
+def add_patients(
+    first_name_ent, last_name_ent, username_ent, email_ent,
+    password_ent, confirm_password_ent, dob_ent, gender_var,
+    address_ent, country_var, city_ent, state_var, postal_ent,
+    phone_ent, status_var, avatar_path_var
+):
+    first_name = first_name_ent.get()
+    last_name = last_name_ent.get()
+    username = username_ent.get()
+    email = email_ent.get()
+    password = password_ent.get()
+    confirm_password = confirm_password_ent.get()
+    dob = dob_ent.get()
+    gender = gender_var.get()
+    address = address_ent.get()
+    country = country_var.get()
+    city = city_ent.get()
+    state = state_var.get()
+    postal = postal_ent.get()
+    phone = phone_ent.get()
+    status = status_var.get()
+    avatar = avatar_path_var.get()
+
+
+    if not username or not email or not password or not phone:
+        messagebox.showerror("Error", "All fields are required")
+        return
+
+    if password != confirm_password:
+        messagebox.showerror("Error", "Passwords do not match")
+        return
+
+    if len(password)<8:
+        messagebox.showerror("Error", "Passwords is week")
+        return
+
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        #  hash password
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        )
+        # ➕ insert Doctor
+        add_doctor = """
+                INSERT INTO patients (first_name, last_name, username, email, password, date_of_birth, gender, address, country, city, state_province, postal_code, phone, avatar, status)
+                VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s, %s, %s,%s, %s,%s)
+                """
+        values = (first_name,last_name,username,email,hashed_password,dob,gender,address,country,state, city,postal,phone,avatar,status)
+        cur.execute(add_doctor, values)
+        con.commit()
+
+        messagebox.showinfo("Success", "Registration Successful")
+
+        cur.close()
+        con.close()
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
+
 
 def scrollable_frame(parent):
     canvas = tk.Canvas(
@@ -333,16 +332,6 @@ def add_patient_form(content_frame):
     # =========================
     # BIOGRAPHY
     # =========================
-    create_label("Short Biography", 15, 0)
-
-    bio_txt = tk.Text(
-        container,
-        height=4,
-        font=("Segoe UI", 10),
-        relief="solid",
-        bd=1
-    )
-    bio_txt.grid(row=16, column=0, columnspan=4, sticky="we", padx=10, pady=(0, 10))
 
     # =========================
     # STATUS
@@ -374,23 +363,22 @@ def add_patient_form(content_frame):
         padx=30,
         pady=10,
         cursor="hand2",
-        # command=lambda: add_patient(
-        #     first_name_ent,
-        #     last_name_ent,
-        #     username_ent,
-        #     email_ent,
-        #     password_ent,
-        #     confirm_password_ent,
-        #     dob_ent,
-        #     gender_var,
-        #     address_ent,
-        #     country_var,
-        #     city_ent,
-        #     state_var,
-        #     postal_ent,
-        #     phone_ent,
-        #     bio_txt,
-        #     status_var,
-        #     avatar_path_var
-        # )
+        command=lambda: add_patients(
+            first_name_ent,
+            last_name_ent,
+            username_ent,
+            email_ent,
+            password_ent,
+            confirm_password_ent,
+            dob_ent,
+            gender_var,
+            address_ent,
+            country_var,
+            city_ent,
+            state_var,
+            postal_ent,
+            phone_ent,
+            status_var,
+            avatar_path_var
+        )
     ).grid(row=19, column=0, columnspan=4, pady=30)
