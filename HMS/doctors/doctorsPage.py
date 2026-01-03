@@ -4,6 +4,7 @@ from tkinter import messagebox
 
 from PIL import Image, ImageTk
 from HMS.db.databaseConnection import get_connection
+from HMS.doctors.rount import show_doctor_details
 
 
 
@@ -13,7 +14,7 @@ def select_doctor():
         cur = con.cursor()
 
         query = """
-        SELECT full_name, roles, address, image
+        SELECT id, full_name, roles, address, image
         FROM doctors
         ORDER BY id DESC
         """
@@ -57,8 +58,7 @@ def doctors_items(content_frame):
     # =========================
     # CREATE CARDS
     # =========================
-    for index, (name, role, location, img_name) in enumerate(doctors):
-
+    for index, (doctor_id, name, role, location, img_name) in enumerate(doctors):
         row = index // cols
         col = index % cols
 
@@ -84,7 +84,8 @@ def doctors_items(content_frame):
             text="⋮",
             bg="white",
             fg="#777",
-            font=("Segoe UI", 14)
+            font=("Segoe UI", 14),
+
         ).place(x=210, y=8)
 
         # ---------- AVATAR ----------
@@ -97,7 +98,9 @@ def doctors_items(content_frame):
         img = Image.open(image_path).resize((60, 60))
         photo = ImageTk.PhotoImage(img)
 
-        avatar = tk.Button(card, image=photo, bg="white",cursor= "hand2",bd=0)
+        avatar = tk.Button(card, image=photo, bg="white",cursor= "hand2",bd=0,
+                           command=lambda d_id=doctor_id: show_doctor_details(content_frame, d_id)
+)
         avatar.image = photo
         avatar.pack(pady=(18, 6))
 
