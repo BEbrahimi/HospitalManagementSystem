@@ -6,3 +6,7 @@ def show_doctors(content_frame):
 def show_doctor_details(content_frame, doctor_id):
     from HMS.doctors.doctorDetails import open_doctor_details
     open_doctor_details(content_frame, doctor_id)
+
+def show_doctor_edit(content_frame, doctor_id):
+    from HMS.doctors.doctorDetails import open_doctor_details
+    open_doctor_details(content_frame, doctor_id)

@@ -1,11 +1,16 @@
 import tkinter as tk
-
+from HMS.doctors.editDoctors import edit_doctor_form
 from HMS.doctors.profile import doctors_profile
 
 
 def clear_frame(frame):
     for widget in frame.winfo_children():
         widget.destroy()
+
+def show_edit_doctor(content_frame, doctor_id):
+    clear_frame(content_frame)
+    edit_doctor_form(content_frame,doctor_id)
+
 def open_doctor_details(content_frame, doctor_id):
     clear_frame(content_frame)
 
@@ -33,6 +38,7 @@ def open_doctor_details(content_frame, doctor_id):
         padx=16,
         pady=6,
         cursor="hand2",
+        command= lambda:show_edit_doctor(content_frame, doctor_id)
     )
     add_btn.pack(side="right")
     doctors_profile(doctor_id,content_frame)
