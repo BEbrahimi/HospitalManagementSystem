@@ -6,6 +6,95 @@ import bcrypt
 
 from HMS.db.databaseConnection import get_connection
 
+def update_doc(
+    doctor_id,
+    full_name_ent, roles_ent, username_ent, email_ent,
+    password_ent, confirm_password_ent, dob_ent, gender_var,
+    address_ent, country_var, city_ent, state_var, postal_ent,
+    phone_ent, bio_txt, status_var, avatar_path_var
+):
+    full_name = full_name_ent.get()
+    roles = roles_ent.get()
+    username = username_ent.get()
+    email = email_ent.get()
+    password = password_ent.get()
+    confirm_password = confirm_password_ent.get()
+    dob = dob_ent.get()
+    gender = gender_var.get()
+    address = address_ent.get()
+    country = country_var.get()
+    city = city_ent.get()
+    state = state_var.get()
+    postal = postal_ent.get()
+    phone = phone_ent.get()
+    bio = bio_txt.get("1.0", "end-1c")
+    status = status_var.get()
+    avatar = avatar_path_var.get()
+
+    if not username or not email or not phone:
+        messagebox.showerror("Error", "All required fields must be filled")
+        return
+
+    if password:
+        if password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match")
+            return
+
+        if len(password) < 8:
+            messagebox.showerror("Error", "Password is weak")
+            return
+
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        )
+    else:
+        hashed_password = None
+
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        if hashed_password:
+            update_query = """
+                UPDATE doctors SET
+                    full_name=%s, roles=%s, username=%s, email=%s,
+                    password=%s, dob=%s, Gender=%s, address=%s,
+                    counter=%s, city=%s, state=%s, postal=%s,
+                    phone=%s, image=%s, bio=%s, status=%s
+                WHERE id=%s
+            """
+            values = (
+                full_name, roles, username, email, hashed_password,
+                dob, gender, address, country, city, state, postal,
+                phone, avatar, bio, status, doctor_id
+            )
+        else:
+            update_query = """
+                UPDATE doctors SET
+                    full_name=%s, roles=%s, username=%s, email=%s,
+                    dob=%s, Gender=%s, address=%s,
+                    counter=%s, city=%s, state=%s, postal=%s,
+                    phone=%s, image=%s, bio=%s, status=%s
+                WHERE id=%s
+            """
+            values = (
+                full_name, roles, username, email,
+                dob, gender, address, country, city, state, postal,
+                phone, avatar, bio, status, doctor_id
+            )
+
+        cur.execute(update_query, values)
+        con.commit()
+
+        messagebox.showinfo("Success", "Doctor information updated successfully")
+
+        cur.close()
+        con.close()
+
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
+
 
 def scrollable_frame(parent):
     canvas = tk.Canvas(
@@ -351,4 +440,11 @@ def edit_doctor_form(content_frame,doctor_id):
         padx=30,
         pady=10,
         cursor="hand2",
+        command=lambda:update_doc(
+    doctor_id,
+    full_name_ent, roles_ent, username_ent, email_ent,
+    password_ent, confirm_password_ent, dob_ent, gender_var,
+    address_ent, country_var, city_ent, state_var, postal_ent,
+    phone_ent, bio_txt, status_var, avatar_path_var
+)
     ).grid(row=19, column=0, columnspan=4, pady=30)
