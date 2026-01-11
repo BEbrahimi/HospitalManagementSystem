@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 
+from HMS.Appointments.add_Appointment import add_appointment_form
+from HMS.Appointments.appointmentList import appointment_list
 from HMS.Patients.Patienslist import patient_list
 from HMS.Patients.addPatients import add_patient_form
 from HMS.doctors.addDoctor import add_doctor_form
@@ -176,14 +178,43 @@ def show_patients():
     add_btn.pack(side="right")
     patient_list(content_frame)
 
+def show_add_appointment():
+    clear_content()
+    add_appointment_form(content_frame)
+
+
+
+
 def show_appointments():
     clear_content()
+    # =========================
+    # TOP BAR (Title + Button)
+    # =========================
+    top_bar = tk.Frame(content_frame, bg="#f5f7fa", height=60)
+    top_bar.pack(fill="x", padx=20, pady=(10, 0))
+
     tk.Label(
-        content_frame,
-        text="📅 Appointments Page",
-        font=("Segoe UI", 20, "bold"),
-        bg="#f5f7fa"
-    ).pack(pady=40)
+        top_bar,
+        text=" Appointment ",
+        bg="#f5f7fa",
+        fg="#000",
+        font=("Segoe UI", 18, "bold")
+    ).pack(side="left",pady=10)
+
+    add_btn = tk.Button(
+        top_bar,
+        text="+ Add Appointment",
+        bg="#0d6efd",
+        fg="white",
+        font=("Segoe UI", 10, "bold"),
+        relief="flat",
+        padx=16,
+        pady=6,
+        cursor="hand2",
+        command=show_add_appointment,
+    )
+    add_btn.pack(side="right")
+    appointment_list(content_frame)
 
 def show_invoices():
     clear_content()
