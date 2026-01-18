@@ -5,14 +5,34 @@ from PIL import ImageTk, Image
 from HMS.db.databaseConnection import get_connection
 
 
+def calculate_age(dob):
+    from datetime import datetime, date
+    if not dob:
+        return ""
+
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            dob_date = datetime.strptime(dob, fmt).date()
+            break
+        except ValueError:
+            continue
+    else:
+        return ""
+
+    today = date.today()
+    age = today.year - dob_date.year - (
+            (today.month, today.day) < (dob_date.month, dob_date.day)
+    )
+    return age
+
 def select_patients():
     try:
         con = get_connection()
         cur = con.cursor()
 
         query = """
-        SELECT first_name, date_of_birth, address,phone,email
-        FROM patients
+        SELECT id, patient_name, dob, doctor, department,date,time, status
+        FROM appointment
         ORDER BY id DESC
         """
         cur.execute(query)
@@ -56,7 +76,7 @@ def appointment_list(content_frame):
         foreground="#333333",
         rowheight=46,
         fieldbackground="#ffffff",
-        font=("Segoe UI", 10)
+        font=("Segoe UI", 10,"bold")
     )
 
     style.configure(
@@ -67,8 +87,9 @@ def appointment_list(content_frame):
     )
 
     style.map(
-        "Treeview",
-        background=[("selected", "#e3f2fd")]
+         "Treeview",
+        background=[("selected", "#efefef")],
+        foreground=[("selected", "black")]
     )
 
     # =========================
@@ -113,7 +134,8 @@ def appointment_list(content_frame):
         table_frame,
         columns=columns,
         show="tree headings",
-        height=10
+        height=10,
+
     )
 
     # Column widths
@@ -145,6 +167,34 @@ def appointment_list(content_frame):
     )
     tree.configure(yscrollcommand=scrollbar.set)
     scrollbar.pack(side="right", fill="y")
+
+    def load_data():
+        tree.delete(*tree.get_children())
+
+        per_page = entries_var.get()
+        page = current_page.get()
+
+        start = (page - 1) * per_page
+        end = start + per_page
+
+        for row in data[start:end]:
+            age = calculate_age(row[2])
+            item = tree.insert(
+                "",
+                "end",
+
+                values=(row[0], row[1],age, row[3], row[4], row[5], row[6], row[7],"🎁"),
+
+            )
+        # =========================
+        # EVENTS
+        # =========================
+        entries_box.bind("<<ComboboxSelected>>", lambda e: load_data())
+
+        # =========================
+        # INITIAL LOAD
+        # =========================
+    load_data()
 
 
 

@@ -1,51 +1,79 @@
-import os
 import random
-import shutil
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import bcrypt
+from tkinter import ttk, messagebox
+
 from HMS.db.databaseConnection import get_connection
 
-def scrollable_frame(parent):
-    canvas = tk.Canvas(
-        parent,
-        bg="white",
-        highlightthickness=0
-    )
+def add_patients(
+    app_id_ent, patient_name_ent,dob_ent,time_ent, dep_var, doctor_var, email_ent,phone_ent, msg_txt,status_var
+):
+    id = app_id_ent.get()
+    patient_name = patient_name_ent.get()
+    dob = dob_ent.get()
+    time = time_ent.get()
+    dept = dep_var.get()
+    doctor = doctor_var.get()
+    email = email_ent.get()
+    phone = phone_ent.get()
+    msg_txt = msg_txt.get("1.0", "end-1c")
+    status = status_var.get()
 
-    scrollbar = tk.Scrollbar(
-        parent,
-        orient="vertical",
-        command=canvas.yview
-    )
 
-    scroll_frame = tk.Frame(canvas, bg="white")
 
-    scroll_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
-    )
+    if not patient_name or not email or not doctor or not phone:
+        messagebox.showerror("Error", "All fields are required")
+        return
+    try:
+        con = get_connection()
+        cur = con.cursor()
+        # ➕ insert Doctor
+        add_appointment = """
+                INSERT INTO appointment (id, patient_name, dob, time, department, doctor, email, phone, message, status)
+                VALUES (%s, %s, %s, %s,%s, %s, %s, %s,%s, %s)
+                """
+        values = (id,patient_name,dob,time,dept,doctor,email,phone,msg_txt,status)
+        cur.execute(add_appointment, values)
+        con.commit()
 
-    canvas.create_window(
-        (0, 0),
-        window=scroll_frame,
-        anchor="nw"
-    )
+        messagebox.showinfo("Success", "Registration Successful")
 
-    canvas.configure(yscrollcommand=scrollbar.set)
+        cur.close()
+        con.close()
+    except Exception as e:
+        messagebox.showerror("Database Error", str(e))
 
-    #  padding
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
 
-    return scroll_frame
+
+
+
+def get_active_doctors():
+    try:
+        con = get_connection()
+        cur = con.cursor()
+
+        query = """
+        SELECT full_name
+        FROM doctors
+        WHERE status = %s
+          AND full_name IS NOT NULL
+          AND full_name != ''
+        ORDER BY full_name
+        """
+        cur.execute(query, ('Active',))
+
+        doctors = [row[0] for row in cur.fetchall()]
+        return doctors
+
+    except Exception as e:
+        print("DB Error:", e)
+        return []
+
+    finally:
+        con.close()
 
 def add_appointment_form(content_frame):
-    form_area = scrollable_frame(content_frame)
 
-    container = tk.Frame(form_area, bg="white")
+    container = tk.Frame(content_frame, bg="white")
     container.pack(fill="both", expand=True, padx=20)
 
     container.grid_columnconfigure(0, weight=1, uniform="x")
@@ -108,10 +136,6 @@ def add_appointment_form(content_frame):
             ipady=6
         )
         return ent
-
-    def shorten_filename(name, max_len=30):
-        return name if len(name) <= max_len else name[:max_len - 3] + "..."
-
     def generate_appointment_id():
         number = random.randint(1, 9999)
         return f"APT-{number:04d}"
@@ -123,9 +147,16 @@ def add_appointment_form(content_frame):
     create_label("Patient Name", 1, 2)
 
     app_id_ent = create_entry(2, 0, 2)
-    patient_name_ent = create_entry(2, 2, 2)
+
     # Generate and insert ID
     app_id_ent.insert(0, generate_appointment_id())
+    app_id_ent.config(
+        state='readonly',
+        readonlybackground='#e0e0e0',
+        fg='black'
+    )
+    patient_name_ent = create_entry(2, 2, 2)
+
 
     # =========================
     # DATE & GENDER
@@ -134,6 +165,7 @@ def add_appointment_form(content_frame):
     create_label("Time", 3, 2)
 
     dob_ent = create_entry(4, 0, 2)
+
     time_ent = create_entry(4, 2, 2)
 
 
@@ -157,7 +189,7 @@ def add_appointment_form(content_frame):
     doctor_cb = ttk.Combobox(
         container,
         textvariable=doctor_var,
-        values=["Dentists", "Neurology", "Ophthalmology", "Orthopedics","Cancer Department" ,"ENT Department"],
+        values=get_active_doctors(),
         style="Custom.TCombobox"
     )
     doctor_cb.grid(row=6, column=2,columnspan=2, sticky="we", padx=10, ipady=4)
@@ -167,7 +199,7 @@ def add_appointment_form(content_frame):
     # PHONE & AVATAR
     # =========================
     create_label("Email", 7, 0)
-    phone_ent = create_entry(8, 0, 2)
+    email_ent = create_entry(8, 0, 2)
 
     create_label("Phone", 7, 2)
     phone_ent = create_entry(8, 2, 2)
@@ -216,4 +248,7 @@ def add_appointment_form(content_frame):
         padx=30,
         pady=10,
         cursor="hand2",
+        command= lambda:add_patients(
+    app_id_ent, patient_name_ent,dob_ent,time_ent, dep_var, doctor_var, email_ent,phone_ent, msg_txt,status_var
+)
     ).grid(row=13, column=0, columnspan=4, pady=30)
