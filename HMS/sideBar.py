@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 
+from HMS.Accounts.invoices import add_invoice_form
+from HMS.Accounts.payments import payment_list
 from HMS.Appointments.add_Appointment import add_appointment_form
 from HMS.Appointments.appointmentList import appointment_list
 from HMS.Patients.Patienslist import patient_list
@@ -218,22 +220,11 @@ def show_appointments():
 
 def show_invoices():
     clear_content()
-    tk.Label(
-        content_frame,
-        text="🧾 Invoices Page",
-        font=("Segoe UI", 20, "bold"),
-        bg="#f5f7fa"
-    ).pack(pady=40)
+    add_invoice_form(content_frame)
 
 def show_payments():
     clear_content()
-    tk.Label(
-        content_frame,
-        text="💳 Payments Page",
-        font=("Segoe UI", 20, "bold"),
-        bg="#f5f7fa"
-    ).pack(pady=40)
-
+    payment_list(content_frame)
 # =======================
 # Accounts Dropdown Logic
 # =======================
