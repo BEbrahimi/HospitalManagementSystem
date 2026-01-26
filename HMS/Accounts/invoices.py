@@ -1,6 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 
+
+
+def show_view_invoice(content_frame):
+    from HMS.Accounts.invoiceDetails import invoice_list
+    invoice_list(content_frame)
+
 def add_invoice_form(content_frame):
 
     # =========================
@@ -113,7 +119,7 @@ def add_invoice_form(content_frame):
     action_menu = tk.Menu(content_frame, tearoff=0)
 
     action_menu.add_command(label="✏️  Edit")
-    action_menu.add_command(label="👁️  View")
+    action_menu.add_command(label="👁️  View",command=lambda: show_view_invoice(content_frame))
     action_menu.add_command(label="⬇️  Download")
     action_menu.add_separator()
     action_menu.add_command(label="🗑️  Delete")
